@@ -1,40 +1,44 @@
 #include <stdio.h>
-#include <conio.h>
+#include <stdlib.h>
 
 int airfare();
 int ticket();
 int profile();
 
-int choice, customerID, age, baggageWt, distance, fare, ageDiscount, chg, taxamt, clubDiscount, total_fare;
-char gender, source, destination, clubMember;
+struct airport
+{
+    int age, *ptr1, choice, customerID, baggageWt, distance, fare, ageDiscount, chg, taxamt, clubDiscount, total_fare;
+    char gender, source, destination, clubMember;
+} s;
 
 int main()
 {
+    struct airport s;
     printf("\n============================================================\n");
-    printf("                      Airways Program             ");
+    printf("\t\t      Airways Program\t\t\t");
     printf("\n============================================================\n");
     printf("Enter customer ID: ");
-    scanf("%d", &customerID);
+    scanf("%d", &s.customerID);
     printf("Enter age: ");
-    scanf("%d", &age);
+    scanf("%d", &s.age);
     printf("Enter gender (M/F): ");
-    scanf(" %c", &gender);
+    scanf(" %c", &s.gender);
     printf("Enter Source (C-Cochin, D-Delhi, B-Bangalore): ");
-    scanf(" %c", &source);
+    scanf(" %c", &s.source);
     printf("Enter destination (C-Cochin, D-Delhi, B-Bangalore): ");
-    scanf(" %c", &destination);
+    scanf(" %c", &s.destination);
     printf("Enter distance in Km: ");
-    scanf("%d", &distance);
+    scanf("%d", &s.distance);
     printf("Enter baggage weight in Kg: ");
-    scanf("%d", &baggageWt);
+    scanf("%d", &s.baggageWt);
     printf("Do you have club card membership? (Y/N): ");
-    scanf(" %c", &clubMember);
+    scanf(" %c", &s.clubMember);
     printf("\n");
 
     do
     {
         printf("\n============================================================\n");
-        printf("                        Airways Menu                ");
+        printf("\t\t      Airways Menu\t\t");
         printf("\n============================================================\n");
         printf("1.Passenger Profile\n");
         printf("2.Airfare Calculation\n");
@@ -42,137 +46,148 @@ int main()
         printf("4.Exit");
         printf("\n============================================================\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+        scanf("%d", &s.choice);
         printf("============================================================\n");
 
         // Lab 3 (menu driven using switch case)
 
-        switch (choice)
+        switch (s.choice)
         {
         case 1:
-            profile();
+            profile(s);
             break;
         case 2:
             // Lab 2 (calculations)
-            airfare();
+            airfare(s);
             break;
         case 3:
-            ticket();
+            ticket(s);
+            break;
+        case 4:
+            break;
+        default:
+            printf("Invalid input! Please choose from 1-4!");
             break;
         }
-    } while (choice != 4);
+    } while (s.choice != 4);
     return 0;
 }
 
 // functions
 
-int profile()
+int profile(struct airport s)
 {
-    printf("\n============================================================\n");
-    printf("                      Passenger Profile             ");
-    printf("\n============================================================\n\n");
-    printf("CustomerID: %d", customerID);
-    printf("\t\tGender: %c \n\n", gender);
-    printf("Age: %d", age);
-    printf("\n\nSource: %c", source);
-    printf("\t\t\tDestination: %c\n", destination);
+    FILE *fptr;
+    fptr = fopen("passenger_profile.txt", "w");
+    s.ptr1 = &s.age;
+
+    fprintf(fptr, "\n============================================================\n");
+    fprintf(fptr, "                      Passenger Profile                         ");
+    fprintf(fptr, "\n============================================================\n\n");
+    fprintf(fptr, "CustomerID: %d", s.customerID);
+    fprintf(fptr, "\t\tGender: %c \n\n", s.gender);
+    fprintf(fptr, "Age: %d", *s.ptr1);
+    fprintf(fptr, "\n\nSource: %c", s.source);
+    fprintf(fptr, "\t\t\tDestination: %c\n", s.destination);
+
+    fclose(fptr);
 }
 
-int airfare()
+int airfare(struct airport s)
 {
-    fare = distance * 150 + (distance * 150) / 10;
+    s.fare = s.distance * 150 + (s.distance * 150) / 10;
 
-    if (age >= 60)
+    if (s.age >= 60)
     {
-        ageDiscount = (40 * fare) / 100;
+        s.ageDiscount = (40 * s.fare) / 100;
     }
     else
     {
-        ageDiscount = 0;
+        s.ageDiscount = 0;
     }
 
-    if (baggageWt > 15)
+    if (s.baggageWt > 15)
     {
-        chg = 20;
-        taxamt = (baggageWt - 15) * chg;
+        s.chg = 20;
+        s.taxamt = (s.baggageWt - 15) * s.chg;
     }
     else
     {
-        taxamt = 0;
+        s.taxamt = 0;
     }
 
-    if (clubMember == 'y' || clubMember == 'Y')
+    if (s.clubMember == 'y' || s.clubMember == 'Y')
     {
-        clubDiscount = (5 * fare) / 100;
+        s.clubDiscount = (5 * s.fare) / 100;
     }
     else
     {
-        clubDiscount = 0;
+        s.clubDiscount = 0;
     }
 
-    total_fare = fare + taxamt - ageDiscount - clubDiscount;
+    s.total_fare = s.fare + s.taxamt - s.ageDiscount - s.clubDiscount;
     printf("\n============================================================\n");
-    printf("                      Airfare Calculation             ");
+    printf("\t\t      Airfare Calculation ");
     printf("\n============================================================\n");
-    printf("\nBase fare: %d", fare);
-    printf("\nMembership discount: %d", clubDiscount);
-    printf("\nAge discount: %d", ageDiscount);
-    printf("\nBaggage charge: %d", taxamt);
+    printf("\nBase fare: %d", s.fare);
+    printf("\nMembership discount: %d", s.clubDiscount);
+    printf("\nAge discount: %d", s.ageDiscount);
+    printf("\nBaggage charge: %d", s.taxamt);
     printf("\n---------------------------");
-    printf("\nTotal fare: %d", total_fare);
+    printf("\nTotal fare: %d", s.total_fare);
     printf("\n---------------------------\n");
 }
 
-int ticket()
+int ticket(struct airport s)
 {
-    fare = distance * 150 + (distance * 150) / 10;
+    s.fare = s.distance * 150 + (s.distance * 150) / 10;
 
-    if (age >= 60)
+    if (s.age >= 60)
     {
-        ageDiscount = (40 * fare) / 100;
+        s.ageDiscount = (40 * s.fare) / 100;
     }
     else
     {
-        ageDiscount = 0;
+        s.ageDiscount = 0;
     }
 
-    if (baggageWt > 15)
+    if (s.baggageWt > 15)
     {
-        chg = 20;
-        taxamt = (baggageWt - 15) * chg;
+        s.chg = 20;
+        s.taxamt = (s.baggageWt - 15) * s.chg;
     }
     else
     {
-        taxamt = 0;
+        s.taxamt = 0;
     }
 
-    if (clubMember == 'y')
+    if (s.clubMember == 'y')
     {
-        clubDiscount = (5 * fare) / 100;
+        s.clubDiscount = (5 * s.fare) / 100;
     }
-    else if (clubMember == 'Y')
+    else if (s.clubMember == 'Y')
     {
-        clubDiscount = (5 * fare) / 100;
+        s.clubDiscount = (5 * s.fare) / 100;
     }
     else
     {
-        clubDiscount = 0;
+        s.clubDiscount = 0;
     }
 
-    total_fare = fare + taxamt - ageDiscount - clubDiscount;
+    s.total_fare = s.fare + s.taxamt - s.ageDiscount - s.clubDiscount;
 
     printf("\n============================================================\n");
-    printf("                      E-Ticket             ");
+    printf("\t\t      E-Ticket ");
     printf("\n============================================================\n");
-    printf("CustomerID: %d", customerID);
-    printf("\t\tGender: %c \n\n", gender);
-    printf("Age: %d", age);
-    printf("\n\nSource: %c", source);
-    printf("\t\t\tDestination: %c\n\n", destination);
-    printf("Distance: %dKm", distance);
-    printf("\t\t\tBaggage Weight: %dKg\n\n", baggageWt);
-    printf("Club Card: %c\n", clubMember);
+    printf("CustomerID: %d", s.customerID);
+    printf("\t\tGender: %c \n\n", s.gender);
+    printf("Age: %d", s.age);
+    printf("\n\nSource: %c", s.source);
+    printf("\t\t\tDestination: %c\n\n", s.destination);
+    printf("Distance: %dKm", s.distance);
+    printf("\t\t\tBaggage Weight: %dKg\n\n", s.baggageWt);
+    printf("Club Card: %c\n", s.clubMember);
     printf("\n---------------------------\n");
-    printf("Total fare: %d", total_fare);
+    printf("Total fare: %d", s.total_fare);
     printf("\n---------------------------\n");
 }
