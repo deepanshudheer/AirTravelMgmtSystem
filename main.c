@@ -49,8 +49,6 @@ int main()
         scanf("%d", &s.choice);
         printf("============================================================\n");
 
-        // Lab 3 (menu driven using switch case)
-
         switch (s.choice)
         {
         case 1:
@@ -72,8 +70,6 @@ int main()
     } while (s.choice != 4);
     return 0;
 }
-
-// functions
 
 int profile(struct airport s)
 {
